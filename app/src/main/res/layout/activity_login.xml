@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="699dp"
+            android:orientation="vertical"
+            tools:ignore="ExtraText,MissingConstraints"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="16dp">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="188dp"
+                android:layout_marginTop="5dp"
+                android:contentDescription="TODO"
+                android:orientation="vertical"
+                android:padding="40dp"
+                app:srcCompat="@drawable/logo_dsr"
+                tools:ignore="ContentDescription"
+                tools:layout_editor_absoluteX="20dp"
+                tools:layout_editor_absoluteY="140dp" />
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="73dp"
+                android:drawableLeft="@drawable/user1"
+                android:drawablePadding="8dp"
+                android:ems="12"
+                android:gravity="center"
+                android:hint="Email address"
+                android:inputType="textPersonName"
+
+                android:paddingLeft="15dp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="73dp"
+                android:drawableLeft="@drawable/password"
+                android:ems="12"
+                android:gravity="center"
+                android:hint="Password"
+                android:inputType="textPersonName"
+                android:drawablePadding="8dp" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/loginbtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="190dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/colorPrimary"
+                    android:ems="7"
+                    android:text="LOGIN"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="60dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginBottom="1dp"
+                    android:background="@color/primary_dark_material_light"
+                    android:baselineAligned="false"
+                    android:ems="7"
+                    android:text="RESET"
+                    android:textColor="#ffffff" />
+            </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_link_ehs"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="2dp"
+                android:gravity="center"
+                android:text="Copyright \u00a9 2022 SIRIM Berhad. All Rights Reserved"
+                android:textColor="#005711"
+                android:textSize="15dp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</RelativeLayout>

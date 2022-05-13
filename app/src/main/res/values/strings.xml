@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="location_name">DSR RAUB PAHANG</string>
+    <string name="app_name">DSR-RFID Tracking System v1.0</string>
+    <string name="text_link_ehs">Forgot Password?<a href="https://tutorial.eyehunts.com//">https://tutorial.eyehunts.com//</a></string>
+
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settings">Settings</string>
+    <string name="textview">textview</string>
+
+</resources>
