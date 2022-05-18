@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,8 +47,6 @@ public class LoginActivity extends AppCompatActivity  {
     int responseCode = 0;
     SharedPreferences myPrefs;
     SharedPreferences.Editor editor;
-    String username = "";
-    String password = "";
     ProgressDialog p;
     @Override
     protected  void onCreate(Bundle savedInstanceState) {
@@ -55,8 +54,8 @@ public class LoginActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_login);
 
 
-        TextView username =(TextView) findViewById(R.id.username);
-        TextView password =(TextView) findViewById(R.id.password);
+//        TextView username =(TextView) findViewById(R.id.username);
+//        TextView password =(TextView) findViewById(R.id.password);
         String prefID = "";
         SharedPreferences myPrefs = getSharedPreferences(prefID, Context.MODE_PRIVATE);
         myPrefs.getString("jwt","default");
@@ -136,8 +135,11 @@ public class LoginActivity extends AppCompatActivity  {
                  conn.setRequestProperty("Content-Type", "application/json");
                  JSONObject obj = new JSONObject();
 
-                 obj.put("identifier", "raub01");
-                 obj.put("password", "Raub01123#");
+                 TextView username =(TextView) findViewById(R.id.username);
+                 TextView password =(TextView) findViewById(R.id.password);
+
+                 obj.put("identifier", username.getText().toString());
+                 obj.put("password", password.getText().toString());
                  OutputStream os = new BufferedOutputStream(conn.getOutputStream());
                  os.write(obj.toString().getBytes());
                  os.flush();
@@ -151,16 +153,14 @@ public class LoginActivity extends AppCompatActivity  {
                      String output;
                      String message = "";
                      while ((output = br.readLine()) != null) {
-                         String msg = "";
-                         for (int i = 51; i < output.length(); i++) {
-                             char letter = output.charAt(i);
-                             if (letter != '"') {
-                                 msg = msg + letter;
-                             } else {
-                                 break;
+                         JSONObject outObj = new JSONObject(output);
+                         JSONArray msgObj = outObj.getJSONArray("message");
+                         if (msgObj.length() > 0) {
+                             JSONArray messages = msgObj.getJSONObject(0).getJSONArray("messages");
+                             if (messages.length() > 0) {
+                                 message = messages.getJSONObject(0).getString("message");
                              }
                          }
-                         message = msg;
                      }
                      responseMessage = message;
                      return "failed";
@@ -174,22 +174,12 @@ public class LoginActivity extends AppCompatActivity  {
                      while ((output = br.readLine()) != null) {
                          Log.d("SIRIMRFID", output);
                          // Get JWT
-                         String jwt = "";
-                         for (int i = 8; i < output.length(); i++) {
-                             char letter = output.charAt(i);
-                             if (letter != '"') {
-                                 jwt = jwt + letter;
-                             } else {
-                                 break;
-                             }
-                         }
-                         Log.d("SIRIMRFID", jwt);
-                         localJwt = jwt;
+                         JSONObject outObj = new JSONObject(output);
+                         localJwt = outObj.getString("jwt");
                      }
                      jwt = localJwt;
                      editor.putString("jwt", jwt);
                      editor.apply();
-                     Log.d("LOGIN", String.valueOf(username));
                      Log.d("LOGIN", "Success!");
                  }
                  conn.disconnect();
@@ -219,7 +209,7 @@ public class LoginActivity extends AppCompatActivity  {
                      }
                  });
              } else {
-                 Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
+                 Toast.makeText(LoginActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
              }
          }
      }
@@ -257,16 +247,14 @@ public class LoginActivity extends AppCompatActivity  {
                     String message = "";
 
                     while ((output = br.readLine()) != null) {
-                        String msg = "";
-                        for (int i = 51; i < output.length(); i++) {
-                            char letter = output.charAt(i);
-                            if (letter != '"') {
-                                msg = msg + letter;
-                            } else {
-                                break;
+                        JSONObject outObj = new JSONObject(output);
+                        JSONArray msgObj = outObj.getJSONArray("message");
+                        if (msgObj.length() > 0) {
+                            JSONArray messages = msgObj.getJSONObject(0).getJSONArray("messages");
+                            if (messages.length() > 0) {
+                                message = messages.getJSONObject(0).getString("message");
                             }
                         }
-                        message = msg;
                     }
                     responseMessage = message;
                     return "failed";
@@ -274,18 +262,14 @@ public class LoginActivity extends AppCompatActivity  {
                     BufferedReader br = new BufferedReader(new InputStreamReader(
                             (conn.getInputStream())));
 
-                    Log.d("SIRIMRFID", "pog");
                     String output;
                     while ((output = br.readLine()) != null) {
                         Log.d("SIRIMRFID", output);
-                        String msg = "";
-
-                        JSONObject obj = new JSONObject(output);
-                        JSONObject roleObj = obj.getJSONObject("role");
-                        name = obj.getString("username");
+                        JSONObject outObj = new JSONObject(output);
+                        JSONObject roleObj = outObj.getJSONObject("role");
+                        name = outObj.getString("username");
                         role = roleObj.getString("name");
                     }
-                    Log.d("LOGIN", String.valueOf(username));
                     Log.d("LOGIN", "Success!");
                 }
                 conn.disconnect();
@@ -318,7 +302,7 @@ public class LoginActivity extends AppCompatActivity  {
                     }
                 }, 3000);
             } else {
-                Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, responseMessage, Toast.LENGTH_SHORT).show();
             }
         }
     }

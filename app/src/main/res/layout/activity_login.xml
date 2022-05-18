@@ -41,8 +41,8 @@
                 android:ems="12"
                 android:gravity="center"
                 android:hint="Email address"
+                android:text="raub01"
                 android:inputType="textPersonName"
-
                 android:paddingLeft="15dp" />
 
             <EditText
@@ -54,6 +54,7 @@
                 android:ems="12"
                 android:gravity="center"
                 android:hint="Password"
+                android:text="Raub01123#"
                 android:inputType="textPersonName"
                 android:drawablePadding="8dp" />
 
