@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -36,8 +37,11 @@ import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity  {
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final String line = System.getProperty("line.separator");
     private Button loginbtn;
     String jwt = "";
+    String name = "";
+    String role = "";
     String responseMessage = "";
     int responseCode = 0;
     SharedPreferences myPrefs;
@@ -56,7 +60,7 @@ public class LoginActivity extends AppCompatActivity  {
         String prefID = "";
         SharedPreferences myPrefs = getSharedPreferences(prefID, Context.MODE_PRIVATE);
         myPrefs.getString("jwt","default");
-       // SharedPreferences.Editor editor = myPrefs.edit();
+        editor = myPrefs.edit();
 
         loginbtn = (Button) findViewById(R.id.loginbtn);
 
@@ -66,29 +70,31 @@ public class LoginActivity extends AppCompatActivity  {
             //@RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
-                if (username.getText().toString().equals("") && password.getText().toString().equals("")) {
-                    //correct
-                    String nameValue = username.getText().toString();
+//                if (username.getText().toString().equals("") && password.getText().toString().equals("")) {
+//                    //correct
+//                    String nameValue = username.getText().toString();
+//
+//
+//                   try
+//                   {
+//                       decoded("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2M5NWEzNmU3YjczMDAyOWZjYTU5ZiIsImFkbWluIjpmYWxzZSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJ1c2VybmFtZSI6InJhdWIwMSIsImNvbmZpcm0iOnRydWUsImVtYWlsIjoicmF1YjAxQHlvcG1haWwuY29tIiwiaWF0IjoxNjUyNDA1NzgwLCJleHAiOjE2NTI0OTIxODB9.sgJIIDLLw4b4WvC64lyE9MB5cGEYJksuRNIYU0SJUS8");
+//                   } catch (Exception e)
+//                    {
+//                       e.printStackTrace();
+//                    }
+//
+//
+//                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                    intent.putExtra("Name", nameValue);
+//                    intent.putExtra("Role", nameValue);
+//                    startActivity(intent);
+//                    Toast.makeText(LoginActivity.this,"LOGIN SUCCESSFUL",Toast.LENGTH_SHORT).show();
+//                } else {
+//                    //incorrect
+//                    Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
+//                }
 
-
-                   try
-                   {
-                       decoded("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyN2M5NWEzNmU3YjczMDAyOWZjYTU5ZiIsImFkbWluIjpmYWxzZSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJ1c2VybmFtZSI6InJhdWIwMSIsImNvbmZpcm0iOnRydWUsImVtYWlsIjoicmF1YjAxQHlvcG1haWwuY29tIiwiaWF0IjoxNjUyNDA1NzgwLCJleHAiOjE2NTI0OTIxODB9.sgJIIDLLw4b4WvC64lyE9MB5cGEYJksuRNIYU0SJUS8");
-                   } catch (Exception e)
-                    {
-                       e.printStackTrace();
-                    }
-
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("Name", nameValue);
-                    intent.putExtra("Role", nameValue);
-                    startActivity(intent);
-                    //Toast.makeText(LoginActivity.this,"LOGIN SUCCESSFUL",Toast.LENGTH_SHORT).show();
-                } else
-
-                    //incorrect
-                    Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
+                login();
             }
 
         });
@@ -113,7 +119,7 @@ public class LoginActivity extends AppCompatActivity  {
          protected void onPreExecute() {
              super.onPreExecute();
              p = new ProgressDialog(LoginActivity.this);
-             p.setMessage("Please wait...It is downloading");
+             p.setMessage("Logging in...");
              p.setIndeterminate(false);
              p.setCancelable(false);
              p.show();
@@ -166,6 +172,7 @@ public class LoginActivity extends AppCompatActivity  {
                      String localJwt = "";
 
                      while ((output = br.readLine()) != null) {
+                         Log.d("SIRIMRFID", output);
                          // Get JWT
                          String jwt = "";
                          for (int i = 8; i < output.length(); i++) {
@@ -176,6 +183,7 @@ public class LoginActivity extends AppCompatActivity  {
                                  break;
                              }
                          }
+                         Log.d("SIRIMRFID", jwt);
                          localJwt = jwt;
                      }
                      jwt = localJwt;
@@ -201,12 +209,120 @@ public class LoginActivity extends AppCompatActivity  {
              Log.d("SIRIMRFID", "onPostExecute: Getting result");
              Log.d("SIRIMRFID", result);
 
-             // if (pDialog.isShowing()) pDialog.dismiss();
+              if (p.isShowing()) p.dismiss();
 
              if (result == "success") {
+                 runOnUiThread(new Runnable() {
+                     @Override
+                     public void run() {
+                         new GetInfo().execute();
+                     }
+                 });
+             } else {
+                 Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
              }
          }
      }
+
+    private class GetInfo extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            p = new ProgressDialog(LoginActivity.this);
+            p.setMessage("Getting info...");
+            p.setIndeterminate(false);
+            p.setCancelable(false);
+            p.show();
+        }
+
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+                URL url = new URL("https://api-dev.sirim-dsr.xfero.xyz/users/me");
+                Log.d("SIRIMRFID", url.toString());
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Authorization", "Bearer " + jwt);
+                conn.setRequestProperty("Content-Type", "application/json");
+
+                if (conn.getResponseCode() != 200) {
+                    Log.d("LOGIN", "Failed : HTTP error code : "
+                            + conn.getResponseCode());
+                    int responseCode = conn.getResponseCode();
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getErrorStream())));
+
+                    String output;
+                    String message = "";
+
+                    while ((output = br.readLine()) != null) {
+                        String msg = "";
+                        for (int i = 51; i < output.length(); i++) {
+                            char letter = output.charAt(i);
+                            if (letter != '"') {
+                                msg = msg + letter;
+                            } else {
+                                break;
+                            }
+                        }
+                        message = msg;
+                    }
+                    responseMessage = message;
+                    return "failed";
+                } else {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getInputStream())));
+
+                    Log.d("SIRIMRFID", "pog");
+                    String output;
+                    while ((output = br.readLine()) != null) {
+                        Log.d("SIRIMRFID", output);
+                        String msg = "";
+
+                        JSONObject obj = new JSONObject(output);
+                        JSONObject roleObj = obj.getJSONObject("role");
+                        name = obj.getString("username");
+                        role = roleObj.getString("name");
+                    }
+                    Log.d("LOGIN", String.valueOf(username));
+                    Log.d("LOGIN", "Success!");
+                }
+                conn.disconnect();
+                return "success";
+            } catch (MalformedURLException e) {
+                Log.e(TAG, e.toString());
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+            } catch (JSONException e) {
+                Log.e(TAG, e.toString());
+            }
+            return "failed";
+        }
+
+
+        protected void onPostExecute(String result) {
+            Log.d("SIRIMRFID", "onPostExecute: Getting result");
+            Log.d("SIRIMRFID", result);
+
+            if (p.isShowing()) p.dismiss();
+
+            if (result == "success") {
+                Handler delayHandler = new Handler();
+                Toast.makeText(LoginActivity.this,"Username: " + name + ", Role: " + role,Toast.LENGTH_SHORT).show();
+                delayHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                }, 3000);
+            } else {
+                Toast.makeText(LoginActivity.this, "LOGIN FAILED !!!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     public void decoded(String JWTEncoded) throws Exception {
         try {
             String[] split = JWTEncoded.split("\\.");

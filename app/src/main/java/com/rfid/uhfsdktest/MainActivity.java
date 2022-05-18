@@ -51,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottomNavigationMenu);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        if (connector.connectCom("dev/ttyS4",115200)) {
-            ModuleManager.newInstance().setUHFStatus(true);
-            try {
-                mReader = RFIDReaderHelper.getDefaultHelper();
-                mReader.registerObserver(rxObserver);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (connector.connectCom("dev/ttyS4",115200)) {
+//            ModuleManager.newInstance().setUHFStatus(true);
+//            try {
+//                mReader = RFIDReaderHelper.getDefaultHelper();
+//                mReader.registerObserver(rxObserver);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
